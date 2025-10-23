@@ -1,0 +1,24 @@
+Create a DataQuality Dashboard with the below specifications -
+Frontend UI - react or node.js based ui and have below pages.
+1. Dashboard with different metrics as tiles for Overall score, Completeness, Accuracy, Consistency, Timeliness.
+ Show quality trends for the above metrics based on different dates the checks were done.
+ Show the quality checks based on a Department like Sales, Marketing, Billing, Ordering, Results
+ Show a section to show recent issues that would list the datasets which have failed the threshold for the data quality rule checks. eg.Invalid phone numbers, duplicate customer records, outdated inventory counts, missing email in customer records etc.
+2. A page which shows the different datasets that can be managed and monitored.
+3. A page for quality issues.
+4. A page for managing the quality rules.
+5. A page to load data to the metrics tables that source the above graphs and displays.
+6. A schema page that gives the structure of the tables and their relationships.
+
+
+Backend - database using postgresql with below tables for ease of storing and managing the data
+1. Dataset tables
+2. DataQualityMetric
+3. Quality Rule
+4. DataQualityIssue
+5. User tables
+6. User relation to DataSet tables
+7. DataQualityMetric to DataQualityIssue tables
+
+API and ETL code
+Have methods to import data into the above tables in bulk and using python.
