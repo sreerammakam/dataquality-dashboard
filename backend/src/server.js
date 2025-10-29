@@ -82,6 +82,47 @@ app.post('/api/rules', async (req, res) => {
   }
 });
 
+// Metrics latest per dataset
+app.get('/api/metrics/latest', async (req, res) => {
+  try {
+    const { datasetId, department } = req.query;
+    const clauses = [];
+    const params = [];
+    if (datasetId) { params.push(Number(datasetId)); clauses.push('v.dataset_id = $' + params.length); }
+    if (department) { params.push(department); clauses.push('d.department = $' + params.length); }
+    const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+    const rows = await runQuery(
+      `SELECT v.*, d.name AS dataset_name, d.department
+         FROM v_metric_latest v
+         JOIN datasets d ON d.id = v.dataset_id
+         ${where}
+         ORDER BY d.name`, params);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Metrics time series
+app.get('/api/metrics/timeseries', async (req, res) => {
+  try {
+    const { datasetId, from, to } = req.query;
+    if (!datasetId) return res.status(400).json({ error: 'datasetId is required' });
+    const params = [Number(datasetId)];
+    const clauses = ['dataset_id = $1'];
+    if (from) { params.push(from); clauses.push(`metric_date >= $${params.length}`); }
+    if (to) { params.push(to); clauses.push(`metric_date <= $${params.length}`); }
+    const rows = await runQuery(
+      `SELECT metric_date::text AS date, overall_score, completeness, accuracy, consistency, timeliness
+         FROM data_quality_metrics
+        WHERE ${clauses.join(' AND ')}
+        ORDER BY metric_date ASC`, params);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Issues
 app.get('/api/issues/recent', async (req, res) => {
   try {

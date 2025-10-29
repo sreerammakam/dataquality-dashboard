@@ -1,0 +1,4 @@
+[
+  {"issue_date":"2025-10-21","severity":"high","title":"Invalid phone numbers","details":"20 rows with bad format"},
+  {"issue_date":"2025-10-22","severity":"medium","title":"Missing emails","details":"~5% records lacking emails"}
+]

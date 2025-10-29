@@ -17,6 +17,48 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  backend:
+    build:
+      context: ../backend
+    container_name: dq_backend
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgres://dq_user:dq_password@db:5432/dq_db
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: dq_frontend
+    environment:
+      VITE_API_BASE: /api
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host"]
+    volumes:
+      - ../frontend:/app
+
+  etl:
+    build:
+      context: ../etl
+    container_name: dq_etl
+    environment:
+      DATABASE_URL: postgresql+psycopg2://dq_user:dq_password@db:5432/dq_db
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../etl:/app
+      - ./data:/data
+
 volumes:
   dq_pgdata:
-EOF
